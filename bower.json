@@ -1,0 +1,19 @@
+{
+  "name": "seedbank-landingpage",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Eron Alves"
+  ],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ngSweetAlert": "angular-sweetalert#^1.1.2"
+  }
+}
