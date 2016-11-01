@@ -6,6 +6,7 @@ var cleanCSS = require('gulp-clean-css');
 var rename = require("gulp-rename");
 var uglify = require('gulp-uglify');
 var pkg = require('./package.json');
+var concat = require('gulp-concat');
 
 // Set the banner content
 var banner = ['/*!\n',
@@ -29,9 +30,12 @@ gulp.task('less', function() {
 
 // Minify compiled CSS
 gulp.task('minify-css', ['less'], function() {
-    return gulp.src('css/creative.css')
+    return gulp.src(['node_modules/bootstrap/dist/css/bootstrap.min.css',
+                     'node_modules/magnific-popup/dist/magnific-popup.css',
+                     'css/creative.css',                    
+                     'bower_components/sweetalert/dist/sweetalert.css'])
+        .pipe(concat('creative.min.css'))             
         .pipe(cleanCSS({ compatibility: 'ie8' }))
-        .pipe(rename({ suffix: '.min' }))
         .pipe(gulp.dest('css'))
         .pipe(browserSync.reload({
             stream: true
@@ -39,31 +43,38 @@ gulp.task('minify-css', ['less'], function() {
 });
 
 // Minify JS
+// gulp.task('minify-js', function() {
+//     return gulp.src('js/creative.js')
+//         .pipe(uglify())
+//         .pipe(header(banner, { pkg: pkg }))
+//         .pipe(rename({ suffix: '.min' }))
+//         .pipe(gulp.dest('js'))
+//         .pipe(browserSync.reload({
+//             stream: true
+//         }))
+// });
+
 gulp.task('minify-js', function() {
-    return gulp.src('js/creative.js')
-        .pipe(uglify())
-        .pipe(header(banner, { pkg: pkg }))
-        .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest('js'))
-        .pipe(browserSync.reload({
-            stream: true
-        }))
+  gulp.src(['node_modules/jquery/dist/jquery.min.js',
+            'node_modules/bootstrap/dist/js/bootstrap.min.js',
+            'js/jquery-easing/jquery.easing.min.js',
+            'node_modules/scrollreveal/dist/scrollreveal.min.js',
+            'node_modules/magnific-popup/dist/jquery.magnific-popup.min.js',
+            'js/creative.js',
+
+            'bower_components/angular/angular.min.js', 
+            'bower_components/sweetalert/dist/sweetalert.min.js',
+            'bower_components/ngSweetAlert/SweetAlert.min.js', 
+            'js/app/app.js',
+            'js/app/service/mailchimp-service.js',
+            'js/app/controller/controller.js'])
+    .pipe(concat('seedbank.min.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('js'))
 });
 
 // Copy vendor libraries from /node_modules into /vendor
 gulp.task('copy', function() {
-    gulp.src(['node_modules/bootstrap/dist/**/*', '!**/npm.js', '!**/bootstrap-theme.*', '!**/*.map'])
-        .pipe(gulp.dest('vendor/bootstrap'))
-
-    gulp.src(['node_modules/jquery/dist/jquery.js', 'node_modules/jquery/dist/jquery.min.js'])
-        .pipe(gulp.dest('vendor/jquery'))
-
-    gulp.src(['node_modules/magnific-popup/dist/*'])
-        .pipe(gulp.dest('vendor/magnific-popup'))
-
-    gulp.src(['node_modules/scrollreveal/dist/*.js'])
-        .pipe(gulp.dest('vendor/scrollreveal'))
-
     gulp.src([
             'node_modules/font-awesome/**',
             '!node_modules/font-awesome/**/*.map',
@@ -73,9 +84,6 @@ gulp.task('copy', function() {
             '!node_modules/font-awesome/*.json'
         ])
         .pipe(gulp.dest('vendor/font-awesome'))
-
-    gulp.src(['bower_components/**'])
-        .pipe(gulp.dest('vendor'))
 })
 
 // Run everything
@@ -91,11 +99,10 @@ gulp.task('browserSync', function() {
 })
 
 // Dev task with browserSync
-gulp.task('dev', ['browserSync', 'copy', 'less', 'minify-css', 'minify-js'], function() {
+gulp.task('dev', ['browserSync', 'less', 'minify-css', 'minify-js'], function() {
     gulp.watch('less/*.less', ['less']);
     gulp.watch('css/*.css', ['minify-css']);
     gulp.watch('js/*.js', ['minify-js']);
-    gulp.watch('js/app/*.js', ['copy']);
     // Reloads the browser whenever HTML or JS files change
     gulp.watch('*.html', browserSync.reload);
     gulp.watch('js/**/*.js', browserSync.reload);
