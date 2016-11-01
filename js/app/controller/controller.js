@@ -7,7 +7,7 @@
     MailChimpController.$inject = ['MailChimpService', 'SweetAlert'];
     function MailChimpController(MailChimpService, SweetAlert) {
         var vm = this;
-        vm.emailFormat = /^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/;
+        vm.emailFormat = /^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/;
 
         vm.merchant = {
             subscribe: function () {
